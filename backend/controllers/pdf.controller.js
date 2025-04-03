@@ -7,12 +7,18 @@ import userModel from "../modals/user.modal.js";
 const conn = mongoose.connection;
 let gfs;
 
+conn.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
 conn.once('open', () => {
+  console.log('MongoDB connection established successfully');
   // Initialize GridFS using the native MongoDB driver
   const db = conn.db;
   gfs = new mongoose.mongo.GridFSBucket(db, {
     bucketName: 'pdfs'
   });
+  console.log('GridFS initialized');
 });
 
 export const pdf = async (req, res) => {
@@ -26,6 +32,7 @@ export const pdf = async (req, res) => {
     }
   
     if (!gfs) {
+      console.error("GridFS is not initialized");
       return res.status(500).json({
         success: false,
         message: "GridFS is not initialized"
@@ -82,8 +89,9 @@ export const pdf = async (req, res) => {
     }
   };
 
-  export const getPDF = async (req, res) => {
+export const getPDF = async (req, res) => {
     if (!gfs) {
+      console.error("GridFS is not initialized");
       return res.status(500).json({
         success: false,
         message: "GridFS is not initialized"
