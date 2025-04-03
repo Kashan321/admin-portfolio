@@ -64,7 +64,7 @@ export const uploadPDF = async (req, res) => {
     if (previousFiles.length > 0) {
       await Promise.all(previousFiles.map(file => 
         gfs.delete(file._id)
-      );
+      ));
       console.log(`Deleted ${previousFiles.length} previous PDF file(s)`);
     }
 
@@ -82,24 +82,20 @@ export const uploadPDF = async (req, res) => {
     // Pipe the read stream to GridFS
     readStream.pipe(uploadStream);
 
-    return new Promise((resolve, reject) => {
-      uploadStream.on('finish', () => {
-        console.log('PDF saved successfully');
-        res.status(200).json({
-          success: true,
-          message: "PDF saved successfully",
-          fileId: uploadStream.id
-        });
-        resolve();
+    uploadStream.on('finish', () => {
+      console.log('PDF saved successfully');
+      res.status(200).json({
+        success: true,
+        message: "PDF saved successfully",
+        fileId: uploadStream.id
       });
+    });
 
-      uploadStream.on('error', (err) => {
-        console.error("Error saving PDF:", err);
-        res.status(500).json({
-          success: false,
-          message: "Failed to save PDF"
-        });
-        reject(err);
+    uploadStream.on('error', (err) => {
+      console.error("Error saving PDF:", err);
+      res.status(500).json({
+        success: false,
+        message: "Failed to save PDF"
       });
     });
 
