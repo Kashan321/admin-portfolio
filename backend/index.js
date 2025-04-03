@@ -19,3 +19,5 @@ app.listen(port, (req, res) => {
     connectDb()
     console.log("APP IS RUNNING ON PORT", port)
 })
+
+export default app
